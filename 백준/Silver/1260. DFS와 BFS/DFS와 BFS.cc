@@ -3,65 +3,59 @@
 #include <queue>
 using namespace std;
 
-int N, M, V;
+int n, m, v;
+
 vector<vector<int>> MAP;
 vector<int> used;
-vector<int> path;
 
-void dfs(int now) {
-	path.push_back(now+1);
-	used[now] = 1;
-	for (int i = 0; i < N; i++) {
-		if (!MAP[now][i] || used[i]) continue;
-		dfs(i);
+void dfs(int level, int node) {
+	cout << node + 1 << ' ';
+	if (level == n) return;
+
+	for (int i = 0; i < n; i++) {
+		if (!MAP[node][i] || used[i]) continue;
+		used[i] = 1;
+		dfs(level + 1, i);
 	}
 }
 
-void bfs(int num) {
+
+int main(){
+
+	cin >> n >> m >> v;
+
+	MAP = vector<vector<int>>(n, vector<int>(n, 0));
+	used = vector<int>(n, 0);
+
+	for (int i = 0; i < m; i++) {
+		int r, c;
+		cin >> r >> c;
+		MAP[r - 1][c - 1] = 1;
+		MAP[c - 1][r - 1] = 1;
+	}
+
+	// dfs
+	used[v - 1] = 1;
+	dfs(0, v - 1);
+	cout << endl;
+
+	used = vector<int>(n, 0);
+
+	// bfs
 	queue<int> q;
-	q.push(num);
-	used[num] = 1;
+	q.push(v - 1);
+	used[v - 1] = 1;
 
 	while (!q.empty()) {
 		int now = q.front();
 		q.pop();
 
-		path.push_back(now + 1);
-
-		for (int i = 0; i < N; i++) {
+		cout << now + 1 << ' ';
+		for (int i = 0; i < n; i++) {
 			if (!MAP[now][i] || used[i]) continue;
 			q.push(i);
 			used[i] = 1;
 		}
-	}
-}
-
-int main() {
-
-	cin >> N >> M >> V;
-	MAP = vector<vector<int>>(N, vector<int>(N, 0));
-	used = vector<int>(N, 0);
-	
-	for (int i = 0; i < M; i++) {
-		int a, b;
-		cin >> a >> b;
-		MAP[a-1][b-1] = MAP[b-1][a-1] = 1;
-	}
-
-	dfs(V-1);
-
-	for (int i = 0; i < path.size(); i++) {
-		cout << path[i] << ' ';
-	}
-	cout << '\n';
-
-	used = vector<int>(N, 0);
-	path.clear();
-
-	bfs(V - 1);
-
-	for (int i = 0; i < path.size(); i++) {
-		cout << path[i] << ' ';
 	}
 
 	return 0;
