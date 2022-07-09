@@ -1,7 +1,7 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <queue>
+#include <string>
 #include <algorithm>
 using namespace std;
 
@@ -9,76 +9,68 @@ struct Pos {
 	int r, c;
 };
 
-int N;	// 지도 크기
+int n;
+vector<string> MAP;
+vector<vector<int>> used;
 
-vector<vector<int>> MAP;	// 지도
-vector<vector<int>> used;	// 체크 배열
-vector<int> group;			// 그룹 단지 수 추가용 배열
-
-// 방향 배열
 int dr[] = { -1,1,0,0 };
 int dc[] = { 0,0,-1,1 };
 
-void bfs(Pos start) {
-	
-	int cnt = 0;
-	queue<Pos> q;
+bool inRange(int r, int c) {
+	return r >= 0 && r < n&& c >= 0 && c < n;
+}
 
-	q.push(start);
-	used[start.r][start.c] = 1;
+int bfs(int r, int c) {
+	queue<Pos> q;
+	q.push({ r,c });
+	used[r][c] = 1;
+
+	int ret = 0;
 
 	while (!q.empty()) {
 		Pos now = q.front();
 		q.pop();
-		
-		cnt++;
-		int r = now.r;
-		int c = now.c;
+		ret++;
 
 		for (int i = 0; i < 4; i++) {
-			int nr = r + dr[i];
-			int nc = c + dc[i];
-			if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-			if (!MAP[nr][nc] || used[nr][nc]) continue;
-
-			q.push({ nr,nc });
+			int nr = now.r + dr[i];
+			int nc = now.c + dc[i];
+			if (!inRange(nr, nc) || used[nr][nc]) continue;
+			if (MAP[nr][nc] == '0') continue;
+			q.push({ nr, nc });
 			used[nr][nc] = 1;
 		}
-
 	}
 
-	group.push_back(cnt);
-
+	return ret;
 }
 
-int main() {
+int main(){
+	cin >> n;
+	used = vector<vector<int>>(n, vector<int>(n, 0));
 
-	cin >> N;
+	vector<int> answer;
 
-	MAP = vector<vector<int>>(N, vector<int>(N, 0));
-	used = vector<vector<int>>(N, vector<int>(N, 0));
-
-	for (int r = 0; r < N; r++) {
+	for (int i = 0; i < n; i++) {
 		string txt;
 		cin >> txt;
-		for (int c = 0; c < N; c++) {
-			int num = txt[c] - '0';
-			MAP[r][c] = num;
+		MAP.push_back(txt);
+	}
+
+	for (int r = 0; r < n; r++) {
+		for (int c = 0; c < n; c++) {
+			if (MAP[r][c] == '0' || used[r][c]) continue;
+			int group = bfs(r, c);
+			answer.push_back(group);
 		}
 	}
 
-	for (int r = 0; r < N; r++) {
-		for (int c = 0; c < N; c++) {
-			if (!MAP[r][c] || used[r][c]) continue;
-			bfs({r,c});
-		}
-	}
+	sort(answer.begin(), answer.end());
 
-	sort(group.begin(), group.end());
+	cout << answer.size() << '\n';
 
-	cout << group.size()<<'\n';
-	for (int i = 0; i < group.size(); i++) {
-		cout << group[i] << '\n';
+	for (int i = 0; i < answer.size(); i++) {
+		cout << answer[i] << '\n';
 	}
 
 	return 0;
