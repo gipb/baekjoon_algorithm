@@ -1,45 +1,39 @@
 #include <iostream>
 #include <queue>
+#include <vector>
 using namespace std;
 
 int dat[100001] = {};
 
 int main() {
+  int N, K;
+  cin >> N >> K;
 
-	int N, K;
-	cin >> N >> K;
+  queue<int> q;
+  dat[N] = 1;
+  q.push(N);
 
-	string str_N, str_K;
-	int ans = 0;
+  while (!q.empty()) {
+    int now = q.front();
+    q.pop();
 
-	// 찾으러 갈 위치가 더 작은 경우 - 만 가능
-	if (N > K) ans = N - K;
+    if(now == K) break;
 
-	else {
-		queue<int> q;
+    if (now > 0 && !dat[now - 1]) {
+      q.push(now - 1);
+      dat[now - 1] = dat[now] + 1;
+    }
+    if(now<100000 && !dat[now+1]){
+      q.push(now+1);
+      dat[now+1] = dat[now]+1;
+    }
+    if(now<50001 && !dat[now*2]){
+      q.push(now*2);
+      dat[now*2] = dat[now]+1;
+    }
+  }
 
-		q.push(N);
-		dat[N] = 1;
+  cout << dat[K]-1;
 
-		while (!q.empty()) {
-			int now = q.front();
-			q.pop();
-
-			if (now == K) break;
-
-			int n[3] = { now * 2, now + 1, now - 1 };
-			for (int i = 0; i < 3; i++) {
-				if (n[i] > 100000 || n[i] < 0) continue;
-				if (dat[n[i]]) continue;
-				q.push(n[i]);
-				dat[n[i]] = dat[now] + 1;
-			}
-		}
-
-		ans = dat[K] - 1;
-	}
-
-	cout << ans;
-
-	return 0;
+  return 0;
 }
