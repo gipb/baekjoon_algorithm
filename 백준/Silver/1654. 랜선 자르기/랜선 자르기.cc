@@ -1,58 +1,61 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
+#include <iostream>
+#include <vector>
 using namespace std;
 
-#define ll long long
+void init();
+int search_length(long long start, long long end);
+bool check(long long l);
 
-int K, N;
-vector<int> line;
-ll max_len = 0;
+int K; // 이미 가지고 있는 랜선의 개수
+int N; // 필요한 랜선의 개수
+int max_l = 0; // 최대 길이
 
-void bs_len(int num, ll start, ll end) {
-	if (start == end) {
-		ll sum = 0;
-		for (int i = 0; i < K; i++) {
-			sum += (line[i]) / start;
-		}
-		if (sum < num) return;
-		max_len = start;
-		return;
-	}
-	ll mid = (start + end) / 2;
-	ll sum = 0;
-	int flag = 0;
+vector<int> lan;
+
+void init() {
+	cin >> K >> N;
+	lan = vector<int>(K, 0);
 	for (int i = 0; i < K; i++) {
-		sum += (line[i] / mid);
-		if (sum >= num) {
-			flag = 1;
-			break;
-		}
+		cin >> lan[i];
+		if (max_l < lan[i]) max_l = lan[i];
 	}
-	if (flag) {
-		if (max_len < mid) max_len = mid;
-		return bs_len(num, mid + 1, end);
-	}
-	else return bs_len(num, start, mid);
 }
 
-int main()
-{
-	cin >> K >> N;
-	long long sum = 0;
+int search_length(long long start, long long end) {
+	// 탈출 조건
+	if (start >= end) {
+        if(check(end)) return end;
+        return end - 1;
+    }
+	long long mid = (start + end) / 2;
+	
+	// 조건에 유효한지 체크
+	bool isValid = check(mid);
+
+	// 유효할 경우 최댓값이 더 있는지 체크
+	if (isValid) return search_length(mid + 1, end);
+
+	// 유효하지 않을 경우 더 작은 길이 체크
+	else return search_length(start, mid);
+}
+
+bool check(long long l) {
+	long long cnt = 0;
 	for (int i = 0; i < K; i++) {
-		int len;
-		cin >> len;
-		line.push_back(len);
-		sum += len;
+		cnt += (lan[i] / l);
+		if (cnt >= N) return true;
 	}
-	sort(line.begin(), line.end(), greater<int>());
+	return false;
+}
 
-	long long limit = sum / N;
+int main() {
+	//initialize
+	init();
 
+	// 이분 탐색을 이용한 정답 찾기
+	int ans = search_length(1, max_l);
 
-	bs_len(N, 1, limit);
-	cout << max_len;
-
+	// 출력
+	cout << ans;
 	return 0;
 }
