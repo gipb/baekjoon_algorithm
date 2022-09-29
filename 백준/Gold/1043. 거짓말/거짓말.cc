@@ -64,9 +64,6 @@ void check_party() {
 int Find(int a) {
 	if (parent[a] == a) return a;
 	else {
-		if (know_truth[parent[a]]) know_truth[a] = 1;
-		if (know_truth[a]) know_truth[parent[a]] = 1;
-		parent[a] = Find(parent[a]);
 		return parent[a] = Find(parent[a]);
 	}
 }
