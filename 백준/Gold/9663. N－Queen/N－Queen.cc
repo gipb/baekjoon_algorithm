@@ -8,8 +8,6 @@ void dfs(int level);
 bool isValid(int r, int c);
 void check(int r, int c, int flag);
 
-vector<vector<int>> board;
-
 map<int, int> check_r; // 행 체크
 map<int, int> check_c; // 열 체크
 map<int, int> check_drb; // 오른쪽 아래 방향 대각선 체크
@@ -20,7 +18,6 @@ int ans;
 
 void init() {
 	cin >> N;
-	board = vector<vector<int>>(N, vector<int>(N,0));
 	ans = 0;
 }
 
